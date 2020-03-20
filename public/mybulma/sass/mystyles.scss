@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+// Set your brand colors
+//$primary: hsl(171, 100%, 41%);
+
+// Update some of Bulma's component variables
+//$table-row-hover-background-color: $primary;
+
+@import "../../node_modules/bulma/bulma.sass";
+@import "../../node_modules/bulma/sass/elements/table.sass";
+
+
