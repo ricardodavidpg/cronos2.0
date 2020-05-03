@@ -1,5 +1,7 @@
 <script>
-    import { searchForIssues } from './Utils.js';
+    import {searchForIssues} from './Utils.js';
+
+    let searchText = "";
 
     function handleDrag(e) {
         e.dataTransfer.setData("issue", e.target.querySelector("#issue").innerText);
@@ -27,39 +29,46 @@
     </p>
     <div class="panel-block">
         <p class="control has-icons-left">
-            <input class="input is-primary" type="text" placeholder="Search">
+            <input bind:value={searchText} class="input is-primary" type="text" placeholder="Search">
             <span class="icon is-left">
                 <i class="fas fa-search" aria-hidden="true"></i>
             </span>
         </p>
     </div>
+    {#if searchText.length > 2}
+        {#await searchForIssues({searchText}, "dpereira", "93R3ida5")}
+            <p align="center">Fetching Issues...</p>
+        {:then issues}
+            <table class="table is-hoverable is-fullwidth">
+                <thead>
+                <tr>
+                    <th><abbr title="Issue">Issue</abbr></th>
+                    <th><abbr title="Summary">Summary</abbr></th>
+                    <th><abbr title="Assignee">Assignee</abbr></th>
+                    <th><abbr title="Status">Status</abbr></th>
+                </tr>
 
-    {#await searchForIssues()}
-    <p align="center">Fetching Issues...</p>
-    {:then issues}
-    <table class="table is-hoverable is-fullwidth">
-        <thead>
-        <tr>
-            <th><abbr title="Issue">Issue</abbr></th>
-            <th><abbr title="Summary">Summary</abbr></th>
-            <th><abbr title="Assignee">Assignee</abbr></th>
-            <th><abbr title="Status">Status</abbr></th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--{#each issues as issue}
-        <tr draggable="true" on:dragstart={handleDrag}>
-            <td id="issue">{issue.key}</td>
-            <td id="summary">{issue.fields.summary}</td>
-            <td>{issue.fields.assignee.key}</td>
-            <td>{issue.fields.status.name}</td>
-        </tr>
-        {/each}-->
-        {issues}
-        </tbody>
-    </table>
-    {:catch error}
-    <p align="center">{error}Service call error...</p>
-    {/await}
+                </thead>
+                <tbody>
+                {#each issues as issue}
+                    <tr draggable="true" on:dragstart={handleDrag}>
+                        <td id="issue">{issue.key}</td>
+                        <td id="summary">{issue.fields.summary}</td>
+                        {#if issue.fields.assignee}
+                            <td>{issue.fields.assignee.key}</td>
+                        {:else}
+                            <td></td>
+                        {/if}
+                        <td>{issue.fields.status.name}</td>
+                    </tr>
+                {/each}
+                </tbody>
+            </table>
+        {:catch error}
+            <p align="center">{error}Service call error...</p>
+        {/await}
+    {:else}
+        <p align="center">Enter a search criteria...</p>
+    {/if}
 </article>
 </body>

@@ -6,30 +6,36 @@
     let isActiveTask = false;
     let registry = [];
 
-
     function handleTaskDrop(e) {
         var today = new Date();
         date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-        if (!isActiveTask) {
-            code = e.dataTransfer.getData("issue");
-            summary = e.dataTransfer.getData("summary");
-            start = today.getHours() + ":" + today.getMinutes();
-            isActiveTask = true;
-        } else if (confirm("There is a task already on course, do you want to end it?")) {
-            var register = {
+        if (isActiveTask) {
+            if (confirm("There is a task already on course, do you want to end it?")) {
+                registerTask(today);
+            }
+        }
+
+        initNewTask(e,today);
+    }
+
+    function initNewTask(e, today) {
+        code = e.dataTransfer.getData("issue");
+        summary = e.dataTransfer.getData("summary");
+        start = today.getHours() + ":" + today.getMinutes();
+        isActiveTask = true;
+    }
+
+    function registerTask(today) {
+        registry = [...registry,
+            {
                 code: code,
                 summary: summary,
                 start: start,
                 end: today.getHours() + ":" + today.getMinutes(),
                 date: date
-            };
-            registry = [...registry, register];
-
-            code = e.dataTransfer.getData("issue");
-            summary = e.dataTransfer.getData("summary");
-            start = today.getHours() + ":" + today.getMinutes();
-        }
+            }
+        ];
     }
 
     function handleRegistryFinish(e) {
@@ -40,6 +46,7 @@
         date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         start = today.getHours() + ":" + today.getMinutes();
     }
+
 </script>
 
 <head>
@@ -69,20 +76,20 @@
         <thead>
         <h3 class="title is-3">Registry</h3>
         <tr>
-            <th><abbr title="Issue">Issue</abbr></th>
-            <th><abbr title="Description">Description</abbr></th>
             <th><abbr title="Start">Start</abbr></th>
             <th><abbr title="End">End</abbr></th>
+            <th><abbr title="Issue">Issue</abbr></th>
+            <th><abbr title="Description">Description</abbr></th>
             <th><abbr title="Date">Date</abbr></th>
         </tr>
         </thead>
         <tbody>
         {#each registry as reg}
             <tr>
-                <td>{reg.code}</td>
-                <td>{reg.summary}</td>
                 <td>{reg.start}</td>
                 <td>{reg.end}</td>
+                <td>{reg.code}</td>
+                <td>{reg.summary}</td>
                 <td>{reg.date}</td>
             </tr>
         {/each}
